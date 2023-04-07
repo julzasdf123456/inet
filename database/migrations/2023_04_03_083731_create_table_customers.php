@@ -27,6 +27,8 @@ class CreateTableCustomers extends Migration
             $table->string('UserId')->nullable();
             $table->string('Trash')->nullable();
             $table->string('Status')->nullable();
+            $table->string('Latitude')->nullable();
+            $table->string('Longitude')->nullable();
             $table->timestamps();
         });
     }

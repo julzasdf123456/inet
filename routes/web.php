@@ -72,4 +72,10 @@ Route::get('/billings/all-unpaid-bills', [App\Http\Controllers\BillingsControlle
 Route::resource('billings', App\Http\Controllers\BillingsController::class);
 
 Route::post('/payment_transactions/transact-bills-payment', [App\Http\Controllers\PaymentTransactionsController::class, 'transactBillsPayment'])->name('paymentTransactions.transact-bills-payment');
+Route::get('/payment_transactions/monthly-sales', [App\Http\Controllers\PaymentTransactionsController::class, 'monthlySales'])->name('paymentTransactions.monthly-sales');
 Route::resource('paymentTransactions', App\Http\Controllers\PaymentTransactionsController::class);
+
+Route::get('/expenses/my-expenses', [App\Http\Controllers\ExpensesController::class, 'myExpenses'])->name('expenses.my-expenses');
+Route::post('/expenses/store-ajax', [App\Http\Controllers\ExpensesController::class, 'storeAjax'])->name('expenses.store-ajax');
+Route::get('/expenses/remove-my-expense/{id}', [App\Http\Controllers\ExpensesController::class, 'removeMyExpense'])->name('expenses.remove-my-expense');
+Route::resource('expenses', App\Http\Controllers\ExpensesController::class);

@@ -49,7 +49,9 @@ class Customers extends Model
         'DateConnected',
         'UserId',
         'Trash',
-        'Status'
+        'Status',
+        'Latitude',
+        'Longitude'
     ];
 
     /**
@@ -70,6 +72,8 @@ class Customers extends Model
         'UserId' => 'string',
         'Trash' => 'string',
         'Status' => 'string',
+        'Latitude' => 'string',
+        'Longitude' => 'string',
     ];
 
     /**
@@ -91,6 +95,8 @@ class Customers extends Model
         'UserId' => 'nullable|string|max:255',
         'Trash' => 'nullable|string|max:255',
         'Status' => 'nullable|string|max:255',
+        'Latitude' => 'nullable|string',
+        'Longitude' => 'nullable|string',
     ];
 
     public static function getAddress($customer) {

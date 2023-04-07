@@ -88,6 +88,7 @@
                                     <th class="text-right">Amount Paid</th>
                                     <th>Payment Date</th>
                                     <th>User Received</th>
+                                    <th></th>
                                 </thead>
                                 <tbody>
                                     @foreach ($paymentTransactions as $item)
@@ -96,6 +97,9 @@
                                             <td class="text-right text-success">₱ {{ number_format($item->AmountPaid, 2) }}</td>
                                             <td>{{ $item->PaymentDate != null ? date('F d, Y', strtotime($item->PaymentDate)) : '' }}</td>
                                             <td>{{ $item->name }}</td>
+                                            <td class="text-right">
+                                                <button onclick="cancelPayment('{{ $item->id }}')" class="btn btn-sm text-danger" title="Cancel this payment"><i class="fas fa-times-circle"></i></button>
+                                            </td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -110,3 +114,41 @@
         </div>
     </div>
 @endsection
+
+@push('page_scripts')
+    <script>
+        function cancelPayment(id) {
+            Swal.fire({
+            title: 'Cancel Payment?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, cancel it!'
+         }).then((result) => {
+            if (result.isConfirmed) {
+               $.ajax({
+                  url : "{{ url('/paymentTransactions/') }}/" + id,
+                  type : 'DELETE',
+                  data : {
+                     _token : '{{ csrf_token() }}',
+                     id : id,
+                  },
+                  success : function(res) {
+                     Toast.fire({
+                        icon : 'success',
+                        text : 'Payment cancelled!'
+                     })
+                     location.reload()
+                  },
+                  error : function(err) {
+                     Toast.fire({
+                        icon : 'error',
+                        text : 'Error cancelling payment!'
+                     })
+                  }
+               })
+            }
+         })
+        }
+    </script>
+@endpush

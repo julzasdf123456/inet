@@ -157,11 +157,23 @@ class PaymentTransactionsController extends AppBaseController
             return redirect(route('paymentTransactions.index'));
         }
 
+        $bill = Billings::where('CustomerId', $paymentTransactions->CustomerId)
+            ->where('BillingMonth', $paymentTransactions->BillingMonth)
+            ->first();
+
+        if ($bill != null) {
+            $amount = $paymentTransactions->AmountPaid;
+            $bill->PaidAmount = floatval($bill->PaidAmount) - floatval($amount);
+            $bill->Balance = floatval($bill->Balance) + floatval($amount);
+            $bill->save();
+        }
+
         $this->paymentTransactionsRepository->delete($id);
 
-        Flash::success('Payment Transactions deleted successfully.');
+        // Flash::success('Payment Transactions deleted successfully.');
 
-        return redirect(route('paymentTransactions.index'));
+        // return redirect(route('paymentTransactions.index'));
+        return response()->json('ok', 200);
     }
 
     public function transactBillsPayment(Request $request) {
@@ -204,5 +216,76 @@ class PaymentTransactionsController extends AppBaseController
         } else {
             return response()->json('Bill not found', 404);
         }
+    }
+
+    public function monthlySales(Request $request) {
+        $month = $request['Month'];
+        $year = $request['Year'];
+        $from = date('Y-m-d', strtotime('first day of ' . $month . ' ' . $year));
+        $to = date('Y-m-d', strtotime('last day of ' . $month . ' ' . $year));
+
+        if (isset($month) && isset($year)) {
+            $data = DB::table('PaymentTransactions')
+                ->leftJoin('Customers', 'PaymentTransactions.CustomerId', '=', 'Customers.id')
+                ->leftJoin('Towns', 'Customers.Town', '=', 'Towns.id')
+                ->leftJoin('Barangays', 'Customers.Barangay', '=', 'Barangays.id')
+                ->leftJoin('users', 'users.id', '=', 'PaymentTransactions.UserId')
+                ->whereRaw("(PaymentTransactions.PaymentDate BETWEEN '" . $from . "' AND '" . $to . "')")
+                ->select(
+                    'FullName',
+                    'Customers.id AS AccountNumber',
+                    'Purok',
+                    'Towns.Town',
+                    'Barangays.Barangay',
+                    'PaymentTransactions.BillingMonth',
+                    'PaymentFor',
+                    'AmountPaid',
+                    'PaymentDate',
+                    'users.name',
+                    'PaymentTransactions.ORNumber',
+                )
+                ->orderBy('PaymentDate')
+                ->get();
+
+            $perCashier = DB::table('PaymentTransactions')
+                ->leftJoin('users', 'users.id', '=', 'PaymentTransactions.UserId')
+                ->whereRaw("(PaymentTransactions.PaymentDate BETWEEN '" . $from . "' AND '" . $to . "')")
+                ->select(
+                    'users.name',
+                    DB::raw("SUM(AmountPaid) AS TotalAmountPaid")
+                )
+                ->groupBy('users.name')
+                ->orderBy('users.name')
+                ->get();
+
+            $perType = DB::table('PaymentTransactions')
+                ->whereRaw("(PaymentTransactions.PaymentDate BETWEEN '" . $from . "' AND '" . $to . "')")
+                ->select(
+                    'PaymentFor',
+                    DB::raw("SUM(AmountPaid) AS TotalAmountPaid")
+                )
+                ->groupBy('PaymentFor')
+                ->orderBy('PaymentFor')
+                ->get();
+
+            $total = DB::table('PaymentTransactions')
+                ->whereRaw("(PaymentTransactions.PaymentDate BETWEEN '" . $from . "' AND '" . $to . "')")
+                ->select(
+                    DB::raw("SUM(AmountPaid) AS Total")
+                )
+                ->first();
+        } else {
+            $data = [];
+            $perCashier = [];
+            $perType = [];
+            $total = null;
+        }       
+
+        return view('/payment_transactions/monthly_sales', [
+            'data' => $data,
+            'perCashier' => $perCashier,
+            'perType' => $perType,
+            'total' => $total
+        ]);
     }
 }

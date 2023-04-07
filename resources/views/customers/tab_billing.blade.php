@@ -34,8 +34,8 @@
             <td class="text-right text-success">{{ number_format($item->PaidAmount, 2) }}</td>
             <td class="text-right text-danger">{{ number_format($item->Balance, 2) }}</td>
             <td>
-               <button class="btn btn-xs text-danger float-right" title="Delete This Bill" onclick="cancelBill('{{ $item->id }}')"><i class="fas fa-trash"></i></button>
                @if ($item->Balance > 0)
+                  <button class="btn btn-xs text-danger float-right" title="Delete This Bill" onclick="cancelBill('{{ $item->id }}')"><i class="fas fa-trash"></i></button>
                   <a class="btn btn-xs text-primary float-right" href="{{ route('billings.edit', [$item->id]) }}" title="Edit this bill"><i class="fas fa-pen"></i></a>
                   <button class="btn btn-xs text-success float-right" title="Pay this bill" onclick="payBill('{{ $item->id }}')"><i class="fas fa-clipboard-check"></i></button>
                @endif               

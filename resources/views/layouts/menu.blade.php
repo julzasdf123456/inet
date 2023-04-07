@@ -1,5 +1,4 @@
-
-
+{{-- CUSTOMERS --}}
 <li class="nav-item has-treeview menu-open">
     <a href="#" class="nav-link">
         <i class="fas fa-user-alt nav-icon"></i>
@@ -27,6 +26,13 @@
         <li class="nav-header">                
             Reports
         </li>
+        <li class="nav-item">
+            <a href="{{ route('paymentTransactions.monthly-sales') }}"
+            class="nav-link {{ Request::is('paymentTransactions.monthly-sales*') ? 'active' : '' }}">
+                <i class="fas fa-comments-dollar nav-icon"></i>
+                <p>Monthly Sales</p>
+            </a>
+        </li>
         
         <li class="nav-item">
             <a href="{{ route('billings.all-unpaid-bills') }}"
@@ -38,6 +44,27 @@
     </ul>
 </li>
 
+{{-- EXPENSES --}}
+<li class="nav-item has-treeview">
+    <a href="#" class="nav-link">
+        <i class="fas fa-file-invoice-dollar nav-icon"></i>
+        <p>
+            Expenses
+            <i class="fas fa-angle-left right"></i>
+        </p>
+    </a>
+    <ul class="nav nav-treeview">
+        <li class="nav-item">
+            <a href="{{ route('expenses.my-expenses') }}"
+               class="nav-link {{ Request::is('expenses.my-expenses*') ? 'active' : '' }}">
+               <i class="fas fa-hand-holding-usd nav-icon"></i>
+                <p>My Expenses</p>
+            </a>
+        </li>
+    </ul>
+</li>
+
+{{-- ADMINISTRATIVE --}}
 <li class="nav-item has-treeview">
     <a href="#" class="nav-link">
         <i class="fas fa-shield-alt nav-icon"></i>
@@ -70,3 +97,5 @@
         </li>
     </ul>
 </li>
+
+
