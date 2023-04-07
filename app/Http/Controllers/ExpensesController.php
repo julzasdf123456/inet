@@ -34,10 +34,39 @@ class ExpensesController extends AppBaseController
      */
     public function index(Request $request)
     {
-        $expenses = $this->expensesRepository->all();
+        $month = isset($request['Month']) ? $request['Month'] : date('F');
+        $year = $request['Year'];
+        $from = date('Y-m-d', strtotime('first day of ' . $month . ' ' . $year));
+        $to = date('Y-m-d', strtotime('last day of ' . $month . ' ' . $year));
 
-        return view('expenses.index')
-            ->with('expenses', $expenses);
+        $data = DB::table('Expenses')
+            ->leftJoin('users', 'Expenses.UserId', '=', 'users.id')
+            ->whereRaw("(ExpenseDate BETWEEN '" . $from . "' AND '" . $to . "')")
+            ->select('Expenses.*', 'users.name')
+            ->orderBy('ExpenseDate')
+            ->get();
+
+        $perUser = DB::table('Expenses')
+            ->leftJoin('users', 'Expenses.UserId', '=', 'users.id')
+            ->whereRaw("(ExpenseDate BETWEEN '" . $from . "' AND '" . $to . "')")
+            ->select(
+                'users.name',
+                DB::raw("SUM(Amount) AS Amount")
+            )
+            ->groupBy('users.name')
+            ->orderBy('users.name')
+            ->get();
+
+        $total = DB::table('Expenses')
+            ->whereRaw("(ExpenseDate BETWEEN '" . $from . "' AND '" . $to . "')")
+            ->select(DB::raw("SUM(Amount) AS Total"))
+            ->first();
+
+        return view('/expenses/index', [
+            'data' => $data,
+            'total' => $total,
+            'perUser' => $perUser
+        ]);
     }
 
     /**
@@ -199,8 +228,7 @@ class ExpensesController extends AppBaseController
         ]);
     }
 
-    public function removeMyExpense($id)
-    {
+    public function removeMyExpense($id) {
         $expenses = $this->expensesRepository->find($id);
 
         if (empty($expenses)) {
@@ -214,5 +242,60 @@ class ExpensesController extends AppBaseController
         Flash::success('Expenses deleted successfully.');
 
         return redirect(route('expenses.my-expenses'));
+    }
+
+    public function balanceSheet(Request $request) {
+        $month = isset($request['Month']) ? $request['Month'] : date('F');
+        $year = $request['Year'];
+        $from = date('Y-m-d', strtotime('first day of ' . $month . ' ' . $year));
+        $to = date('Y-m-d', strtotime('last day of ' . $month . ' ' . $year));
+
+        $expensesConsolidated = DB::table('Expenses')
+            ->whereRaw("(ExpenseDate BETWEEN '" . $from . "' AND '" . $to . "')")
+            ->select('ExpenseFor',
+                DB::raw("SUM(Amount) AS TotalConsolidatedExpenses")
+                )
+            ->groupBy('ExpenseFor')
+            ->orderBy('ExpenseFor')
+            ->get();
+
+        $salesConsolidated = DB::table('PaymentTransactions')
+            ->whereRaw("(PaymentTransactions.PaymentDate BETWEEN '" . $from . "' AND '" . $to . "')")
+            ->select(
+                'PaymentFor',
+                DB::raw("SUM(AmountPaid) AS TotalConsolidatedSales")
+            )
+            ->groupBy('PaymentFor')
+            ->orderBy('PaymentFor')
+            ->get();
+
+        $expensesDetailed = DB::table('Expenses')
+            ->leftJoin('users', 'Expenses.UserId', '=', 'users.id')
+            ->whereRaw("(ExpenseDate BETWEEN '" . $from . "' AND '" . $to . "')")
+            ->select(
+                'Expenses.*',
+                'users.name'
+            )
+            ->orderBy('ExpenseDate')
+            ->get();
+
+        $salesDetailed = DB::table('PaymentTransactions')
+            ->leftJoin('Customers', 'PaymentTransactions.CustomerId', '=', 'Customers.id')
+            ->leftJoin('users', 'users.id', '=', 'PaymentTransactions.UserId')
+            ->whereRaw("(PaymentTransactions.PaymentDate BETWEEN '" . $from . "' AND '" . $to . "')")
+            ->select(
+                'PaymentTransactions.*',
+                'Customers.FullName',
+                'users.name'
+            )
+            ->orderBy('PaymentDate')
+            ->get();
+
+        return view('/expenses/balance_sheet', [
+            'expensesConsolidated' => $expensesConsolidated,
+            'salesConsolidated' => $salesConsolidated,
+            'expensesDetailed' => $expensesDetailed,
+            'salesDetailed' => $salesDetailed,
+        ]);
     }
 }

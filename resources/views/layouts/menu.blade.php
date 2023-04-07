@@ -49,7 +49,7 @@
     <a href="#" class="nav-link">
         <i class="fas fa-file-invoice-dollar nav-icon"></i>
         <p>
-            Expenses
+            Accounting
             <i class="fas fa-angle-left right"></i>
         </p>
     </a>
@@ -59,6 +59,22 @@
                class="nav-link {{ Request::is('expenses.my-expenses*') ? 'active' : '' }}">
                <i class="fas fa-hand-holding-usd nav-icon"></i>
                 <p>My Expenses</p>
+            </a>
+        </li>
+        
+        <li class="nav-item">
+            <a href="{{ route('expenses.index') }}"
+               class="nav-link {{ Request::is('expenses.index*') ? 'active' : '' }}">
+               <i class="fas fa-list nav-icon"></i>
+                <p>All Expenses</p>
+            </a>
+        </li>
+        
+        <li class="nav-item">
+            <a href="{{ route('expenses.balance-sheet') }}"
+               class="nav-link {{ Request::is('expenses.balance-sheet*') ? 'active' : '' }}">
+               <i class="fas fa-file-invoice nav-icon"></i>
+                <p>Balance Sheet</p>
             </a>
         </li>
     </ul>

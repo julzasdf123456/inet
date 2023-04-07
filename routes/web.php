@@ -78,4 +78,5 @@ Route::resource('paymentTransactions', App\Http\Controllers\PaymentTransactionsC
 Route::get('/expenses/my-expenses', [App\Http\Controllers\ExpensesController::class, 'myExpenses'])->name('expenses.my-expenses');
 Route::post('/expenses/store-ajax', [App\Http\Controllers\ExpensesController::class, 'storeAjax'])->name('expenses.store-ajax');
 Route::get('/expenses/remove-my-expense/{id}', [App\Http\Controllers\ExpensesController::class, 'removeMyExpense'])->name('expenses.remove-my-expense');
+Route::get('/expenses/balance-sheet', [App\Http\Controllers\ExpensesController::class, 'balanceSheet'])->name('expenses.balance-sheet');
 Route::resource('expenses', App\Http\Controllers\ExpensesController::class);

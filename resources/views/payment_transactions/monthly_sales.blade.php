@@ -77,17 +77,17 @@
                </ul>
             </div>
             <div class="card-body px-0">
-               <div class="tab-content">
-                  <div class="tab-pane active" id="all-payment-details">
-                     @include('payment_transactions.tab_monthly_all_payment_details')
-                  </div>
-                  <div class="tab-pane" id="per-cashier">
-                     @include('payment_transactions.tab_monthly_per_cashier')
-                  </div>
-                  <div class="tab-pane" id="per-type">
-                     @include('payment_transactions.tab_monthly_per_type')
-                  </div>
-               </div>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="all-payment-details">
+                        @include('payment_transactions.tab_monthly_all_payment_details')
+                    </div>
+                    <div class="tab-pane" id="per-cashier">
+                        @include('payment_transactions.tab_monthly_per_cashier')
+                    </div>
+                    <div class="tab-pane" id="per-type">
+                        @include('payment_transactions.tab_monthly_per_type')
+                    </div>
+                </div>
             </div>
         </div>
     </div>
