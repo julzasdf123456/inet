@@ -268,6 +268,18 @@ class PaymentTransactionsController extends AppBaseController
                 ->orderBy('PaymentFor')
                 ->get();
 
+            $perTown = DB::table('PaymentTransactions')
+                ->leftJoin('Customers', 'PaymentTransactions.CustomerId', '=', 'Customers.id')
+                ->leftJoin('Towns', 'Customers.Town', '=', 'Towns.id')
+                ->whereRaw("(PaymentTransactions.PaymentDate BETWEEN '" . $from . "' AND '" . $to . "')")
+                ->select(
+                    'Towns.Town',
+                    DB::raw("SUM(AmountPaid) AS TotalAmountPaid")
+                )
+                ->groupBy('Towns.Town')
+                ->orderBy('Towns.Town')
+                ->get();
+
             $total = DB::table('PaymentTransactions')
                 ->whereRaw("(PaymentTransactions.PaymentDate BETWEEN '" . $from . "' AND '" . $to . "')")
                 ->select(
@@ -279,13 +291,15 @@ class PaymentTransactionsController extends AppBaseController
             $perCashier = [];
             $perType = [];
             $total = null;
+            $perTown = [];
         }       
 
         return view('/payment_transactions/monthly_sales', [
             'data' => $data,
             'perCashier' => $perCashier,
             'perType' => $perType,
-            'total' => $total
+            'total' => $total,
+            'perTown' => $perTown,
         ]);
     }
 }

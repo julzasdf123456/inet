@@ -80,6 +80,33 @@
     </ul>
 </li>
 
+{{-- INVENTORY --}}
+<li class="nav-item has-treeview">
+    <a href="#" class="nav-link">
+        <i class="fas fa-warehouse nav-icon"></i>
+        <p>
+            Inventory
+            <i class="fas fa-angle-left right"></i>
+        </p>
+    </a>
+    <ul class="nav nav-treeview">
+        <li class="nav-item">
+            <a href="{{ route('stocks.index') }}"
+               class="nav-link {{ Request::is('stocks*') ? 'active' : '' }}">
+                <i class="fas fa-stream nav-icon"></i>
+                <p>Stock Items</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ route('stockHistories.index') }}"
+               class="nav-link {{ Request::is('stockHistories*') ? 'active' : '' }}">
+                <i class="fas fa-history nav-icon"></i>
+                <p>Stock Histories</p>
+            </a>
+        </li>
+    </ul>
+</li>
+
 {{-- ADMINISTRATIVE --}}
 <li class="nav-item has-treeview">
     <a href="#" class="nav-link">
@@ -113,5 +140,4 @@
         </li>
     </ul>
 </li>
-
 

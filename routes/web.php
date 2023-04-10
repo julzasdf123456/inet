@@ -80,3 +80,10 @@ Route::post('/expenses/store-ajax', [App\Http\Controllers\ExpensesController::cl
 Route::get('/expenses/remove-my-expense/{id}', [App\Http\Controllers\ExpensesController::class, 'removeMyExpense'])->name('expenses.remove-my-expense');
 Route::get('/expenses/balance-sheet', [App\Http\Controllers\ExpensesController::class, 'balanceSheet'])->name('expenses.balance-sheet');
 Route::resource('expenses', App\Http\Controllers\ExpensesController::class);
+
+
+Route::get('/stocks/add-stocks', [App\Http\Controllers\StocksController::class, 'addStocks'])->name('stocks.add-stocks');
+Route::post('/stocks/store-ajax', [App\Http\Controllers\StocksController::class, 'storeAjax'])->name('stocks.store-ajax');
+Route::resource('stocks', App\Http\Controllers\StocksController::class);
+
+Route::resource('stockHistories', App\Http\Controllers\StockHistoryController::class);

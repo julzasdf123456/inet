@@ -74,6 +74,9 @@
                   <li class="nav-item"><a class="nav-link" href="#per-type" data-toggle="tab">
                      <i class="fas fa-code-branch"></i>
                      Consolidated Per Payment Type</a></li>
+                <li class="nav-item"><a class="nav-link" href="#per-town" data-toggle="tab">
+                    <i class="fas fa-map-marker-alt"></i>
+                    Consolidated Per Town</a></li>
                </ul>
             </div>
             <div class="card-body px-0">
@@ -86,6 +89,9 @@
                     </div>
                     <div class="tab-pane" id="per-type">
                         @include('payment_transactions.tab_monthly_per_type')
+                    </div>
+                    <div class="tab-pane" id="per-town">
+                        @include('payment_transactions.tab_monthly_town')
                     </div>
                 </div>
             </div>
