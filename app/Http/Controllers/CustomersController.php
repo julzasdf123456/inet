@@ -192,7 +192,7 @@ class CustomersController extends AppBaseController
                 ->whereRaw("CustomerId='" . $id . "'")
                 ->select('CustomerTechnical.*', 'users.name')
                 ->orderByDesc('CustomerTechnical.created_at')
-                ->offset(1)
+                // ->offset(1)
                 ->get();
 
         $billings = Billings::where('CustomerId', $id)
