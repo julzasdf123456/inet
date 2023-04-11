@@ -1,11 +1,16 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <div class="row">
+<div class="row">
 
-
+    <div class="col-lg-12" style="margin-top: 10px;">
+        @include('payment_transactions.dashboard_sales_over_expenses')
     </div>
+
+    <div class="col-lg-12">
+        @include('customers.dashboard_statistics')
+    </div>
+
 </div>
 @endsection
 

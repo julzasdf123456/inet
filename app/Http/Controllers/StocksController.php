@@ -8,6 +8,7 @@ use App\Repositories\StocksRepository;
 use App\Http\Controllers\AppBaseController;
 use Illuminate\Http\Request;
 use App\Models\Stocks;
+use App\Models\StockHistory;
 use App\Models\IDGenerator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -85,7 +86,17 @@ class StocksController extends AppBaseController
             return redirect(route('stocks.index'));
         }
 
-        return view('stocks.show')->with('stocks', $stocks);
+        $history = DB::table("StockHistory")
+            ->leftJoin('users', 'StockHistory.UserId', '=', 'users.id')
+            ->where('StockId', $id)
+            ->select('StockHistory.*', 'users.name')
+            ->orderByDesc('created_at')
+            ->get();
+
+        return view('stocks.show', [
+            'stocks' => $stocks,
+            'history' => $history
+        ]);
     }
 
     /**

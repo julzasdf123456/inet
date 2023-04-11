@@ -8,6 +8,8 @@ use App\Repositories\BarangaysRepository;
 use App\Http\Controllers\AppBaseController;
 use Illuminate\Http\Request;
 use App\Models\Barangays;
+use App\Models\Towns;
+use App\Models\IDGenerator;
 use Flash;
 use Response;
 
@@ -44,7 +46,9 @@ class BarangaysController extends AppBaseController
      */
     public function create()
     {
-        return view('barangays.create');
+        return view('barangays.create', [
+            'towns' => Towns::orderBy('Town')->get(),
+        ]);
     }
 
     /**
@@ -57,6 +61,7 @@ class BarangaysController extends AppBaseController
     public function store(CreateBarangaysRequest $request)
     {
         $input = $request->all();
+        $input['id'] = IDGenerator::generateID();
 
         $barangays = $this->barangaysRepository->create($input);
 
@@ -102,7 +107,10 @@ class BarangaysController extends AppBaseController
             return redirect(route('barangays.index'));
         }
 
-        return view('barangays.edit')->with('barangays', $barangays);
+        return view('barangays.edit', [
+            'barangays' => $barangays,
+            'towns' => Towns::orderBy('Town')->get(),
+        ]);
     }
 
     /**

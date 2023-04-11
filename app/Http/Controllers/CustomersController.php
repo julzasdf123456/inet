@@ -302,10 +302,59 @@ class CustomersController extends AppBaseController
 
         // $this->customersRepository->delete($id);
         $customers->Trash = 'Yes';
+        $customers->UserId = Auth::id();
         $customers->save();
 
         Flash::success('Customers deleted successfully.');
 
         return redirect(route('customers.index'));
+    }
+
+    public function getDashboardStatistics() {
+        $data = DB::table('Customers')
+            ->select(
+                DB::raw("(SELECT COUNT(id) FROM Customers WHERE Status='ACTIVE') AS TotalActiveCustomers"),
+                DB::raw("(SELECT COUNT(id) FROM Customers WHERE Status='DISCONNECTED') AS TotalDisconnectedCustomers"),
+                DB::raw("(SELECT COUNT(id) FROM Customers WHERE DateConnected BETWEEN '" . date('Y-m-d', strtotime('first day of this month')) . "' AND '" . date('Y-m-d', strtotime('last day of this month')) . "') AS NewCustomers"),
+                DB::raw("(SELECT COUNT(id) FROM PaymentTransactions WHERE PaymentFor='Bills Payment' AND (PaymentDate BETWEEN '" . date('Y-m-d', strtotime('first day of this month')) . "' AND '" . date('Y-m-d', strtotime('last day of this month')) . "')) AS PaymentsThisMonth"),
+            )
+            ->first();
+
+        return response()->json($data, 200);
+    }
+
+    public function trash() {
+        $data = DB::table('Customers')
+                ->leftJoin('CustomerTechnical', 'Customers.CustomerTechnicalId', '=', 'CustomerTechnical.id')
+                ->leftJoin('Towns', 'Customers.Town', '=', 'Towns.id')
+                ->leftJoin('Barangays', 'Customers.Barangay', '=', 'Barangays.id')
+                ->leftJoin('users', 'Customers.Userid', '=', 'users.id')
+                ->whereRaw("Trash='Yes'")
+                ->select(
+                    'Customers.id',
+                    'FullName',
+                    'Towns.Town',
+                    'Barangays.Barangay',
+                    'Purok',
+                    'ContactNumber',
+                    'CustomerTechnical.MacAddress',
+                    'CustomerTechnical.SpeedSubscribed',
+                    'Customers.updated_at',
+                    'users.name'
+                )
+                ->get();
+
+        return view('/customers/trash', [
+            'data' => $data,
+        ]);
+    }
+
+    public function restore($id) {
+        Customers::where('id', $id)
+            ->update(['Trash' => null]);
+
+        Flash::success('Customer restored successfully.');
+
+        return redirect(route('customers.trash'));
     }
 }

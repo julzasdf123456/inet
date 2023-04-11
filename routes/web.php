@@ -56,6 +56,9 @@ Route::resource('billsExtensions', App\Http\Controllers\BillsExtensionController
 Route::get('/third_party_transactions/view-transactions/{date}/{co}', [App\Http\Controllers\ThirdPartyTransactionsController::class, 'viewTransactions'])->name('thirdPartyTransactions.view-transactions');
 Route::resource('thirdPartyTransactions', App\Http\Controllers\ThirdPartyTransactionsController::class);
 
+Route::get('/customers/get-dashboard-statistics', [App\Http\Controllers\CustomersController::class, 'getDashboardStatistics'])->name('customers.get-dashboard-statistics');
+Route::get('/customers/trash', [App\Http\Controllers\CustomersController::class, 'trash'])->name('customers.trash');
+Route::get('/customers/restore/{id}', [App\Http\Controllers\CustomersController::class, 'restore'])->name('customers.restore');
 Route::resource('customers', App\Http\Controllers\CustomersController::class);
 
 Route::get('/customer_technicals/change-modem/{id}', [App\Http\Controllers\CustomerTechnicalController::class, 'changeModem'])->name('customerTechnicals.change-modem');
@@ -73,6 +76,7 @@ Route::resource('billings', App\Http\Controllers\BillingsController::class);
 
 Route::post('/payment_transactions/transact-bills-payment', [App\Http\Controllers\PaymentTransactionsController::class, 'transactBillsPayment'])->name('paymentTransactions.transact-bills-payment');
 Route::get('/payment_transactions/monthly-sales', [App\Http\Controllers\PaymentTransactionsController::class, 'monthlySales'])->name('paymentTransactions.monthly-sales');
+Route::get('/payment_transactions/dashboard-graph-data', [App\Http\Controllers\PaymentTransactionsController::class, 'dashboardGraphData'])->name('paymentTransactions.dashboard-graph-data');
 Route::resource('paymentTransactions', App\Http\Controllers\PaymentTransactionsController::class);
 
 Route::get('/expenses/my-expenses', [App\Http\Controllers\ExpensesController::class, 'myExpenses'])->name('expenses.my-expenses');
@@ -87,3 +91,9 @@ Route::post('/stocks/store-ajax', [App\Http\Controllers\StocksController::class,
 Route::resource('stocks', App\Http\Controllers\StocksController::class);
 
 Route::resource('stockHistories', App\Http\Controllers\StockHistoryController::class);
+
+Route::resource('ticketLogs', App\Http\Controllers\TicketLogsController::class);
+
+Route::resource('ticketTypes', App\Http\Controllers\TicketTypesController::class);
+
+Route::resource('tickets', App\Http\Controllers\TicketsController::class);

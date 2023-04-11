@@ -41,6 +41,17 @@
                 <p>All Unpaid Bills</p>
             </a>
         </li>
+
+        <li class="nav-header">                
+            Others
+        </li>
+        <li class="nav-item">
+            <a href="{{ route('customers.trash') }}"
+            class="nav-link {{ Request::is('customers.trash*') ? 'active' : '' }}">
+                <i class="fas fa-trash nav-icon"></i>
+                <p>Trash</p>
+            </a>
+        </li>
     </ul>
 </li>
 
@@ -107,6 +118,34 @@
     </ul>
 </li>
 
+{{-- TICKETS --}}
+<li class="nav-item has-treeview">
+    <a href="#" class="nav-link">
+        <i class="fas fa-archive nav-icon"></i>
+        <p>
+            Tickets
+            <i class="fas fa-angle-left right"></i>
+        </p>
+    </a>
+    <ul class="nav nav-treeview">
+        <li class="nav-item">
+            <a href="{{ route('tickets.index') }}"
+               class="nav-link {{ Request::is('tickets*') ? 'active' : '' }}">
+               <i class="fas fa-circle nav-icon"></i>
+                <p>Tickets</p>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a href="{{ route('ticketTypes.index') }}"
+               class="nav-link {{ Request::is('ticketTypes*') ? 'active' : '' }}">
+               <i class="fas fa-circle nav-icon"></i>
+                <p>Ticket Types</p>
+            </a>
+        </li>
+    </ul>
+</li>
+
 {{-- ADMINISTRATIVE --}}
 <li class="nav-item has-treeview">
     <a href="#" class="nav-link">
@@ -117,6 +156,17 @@
         </p>
     </a>
     <ul class="nav nav-treeview">
+        <li class="nav-item">
+            <a href="#"
+               class="nav-link">
+               <i class="fas fa-map nav-icon"></i>
+                <p>Fleet Monitoring</p>
+            </a>
+        </li>
+
+        <li class="nav-header">                
+            Others
+        </li>
         <li class="nav-item">
             <a href="{{ route('users.index') }}"
                class="nav-link {{ Request::is('users*') ? 'active' : '' }}">

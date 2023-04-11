@@ -302,4 +302,18 @@ class PaymentTransactionsController extends AppBaseController
             'perTown' => $perTown,
         ]);
     }
+
+    public function dashboardGraphData(Request $request) {
+        $sales = DB::table('PaymentTransactions')
+            ->select(
+                DB::raw("CONVERT(NVARCHAR(7), PaymentDate, 120) [Month]"),
+                DB::raw("SUM(AmountPaid) [SalesAmount]"),
+                DB::raw("(SELECT SUM(Amount) FROM Expenses WHERE CONVERT(NVARCHAR(7), ExpenseDate, 120)=CONVERT(NVARCHAR(7), PaymentTransactions.PaymentDate, 120)) AS Expenses")
+            )
+            ->groupByRaw("CONVERT(NVARCHAR(7), PaymentDate, 120)")
+            ->orderByRaw("CONVERT(NVARCHAR(7), PaymentDate, 120)")
+            ->get();
+
+        return response()->json($sales, 200);
+    }
 }
