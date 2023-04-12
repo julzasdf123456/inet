@@ -377,4 +377,83 @@ class PaymentTransactionsController extends AppBaseController
             'unpaidBills' => $unpaidBills,
         ]);
     }
+
+    public function transactBillsPaymentBulk(Request $request) {
+        $id = $request['id']; // customer id
+        $amountPaid = $request['AmountPaid'];
+        $orNumber = $request['ORNumber'];
+        $amountPaid = floatval($amountPaid);
+
+        $unpaidBills = Billings::where('CustomerId', $id)
+            ->whereRaw("Balance > 0")
+            ->orderBy("BillingMonth")
+            ->get();
+
+        $customer = DB::table('Customers')
+            ->leftJoin('Towns', 'Customers.Town', '=', 'Towns.id')
+            ->leftJoin('Barangays', 'Customers.Barangay', '=', 'Barangays.id')
+            ->leftJoin('users', 'users.id', '=', 'Customers.UserId')
+            ->select(
+                'FullName',
+                'Customers.id',
+                'Towns.Town',
+                'Barangays.Barangay',
+                'Purok',
+                'Customers.Email',
+                'ContactNumber',
+                'DateConnected',
+                'Status',
+                'CustomerTechnicalId',
+                'users.name',
+                'Customers.created_at',
+            )
+            ->where('Customers.id', $id)
+            ->first();
+
+        foreach($unpaidBills as $item) {
+            if ($amountPaid > 0) {
+                if (floatval($item->Balance) > $amountPaid) {
+                    $balance = floatval($item->Balance) - $amountPaid;
+                    $item->Balance = $balance;
+                    $item->PaidAmount = $amountPaid;
+                    $item->save();
+
+                    $transactions = new PaymentTransactions;
+                    $transactions->id = IDGenerator::generateIDandRandString();
+                    $transactions->CustomerId = $customer->id;
+                    $transactions->CustomerName = $customer->FullName;
+                    $transactions->PaymentFor = 'Bills Payment';
+                    $transactions->ORNumber = $orNumber;
+                    $transactions->PaymentDate = date('Y-m-d');
+                    $transactions->BillingMonth = $item->BillingMonth;
+                    $transactions->AmountPaid = $amountPaid;
+                    $transactions->UserId = Auth::id();
+                    $transactions->save();
+
+                    $amountPaid = 0;
+                } else {
+                    $bal = $item->Balance;
+                    $item->Balance = 0;
+                    $item->PaidAmount = $item->TotalAmountDue;
+                    $item->save();
+
+                    $transactions = new PaymentTransactions;
+                    $transactions->id = IDGenerator::generateIDandRandString();
+                    $transactions->CustomerId = $customer->id;
+                    $transactions->CustomerName = $customer->FullName;
+                    $transactions->PaymentFor = 'Bills Payment';
+                    $transactions->ORNumber = $orNumber;
+                    $transactions->PaymentDate = date('Y-m-d');
+                    $transactions->BillingMonth = $item->BillingMonth;
+                    $transactions->AmountPaid = $item->TotalAmountDue;
+                    $transactions->UserId = Auth::id();
+                    $transactions->save();
+
+                    $amountPaid = $amountPaid - floatval($bal);
+                }
+            }
+        }
+
+        return response()->json('ok', 200);
+    }
 }

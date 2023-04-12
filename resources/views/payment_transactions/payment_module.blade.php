@@ -69,6 +69,10 @@
                   <input type="number" autofocus class="form-control" placeholder="Input amount paid" id="AmountPaid">
                </div>
                <div class="form-group">
+                  <label for="ORNumber">OR/Invoice Number:</label>
+                  <input type="text" autofocus class="form-control" placeholder="Input ORNumber" id="ORNumber">
+               </div>
+               <div class="form-group">
                   <label for="AmountDue">Amount Due:</label>
                   <input type="number" readonly class="form-control" id="AmountDue" value="{{ $total }}">
                </div>
@@ -123,7 +127,42 @@
                text : 'Please add amount!'
             })
          } else {
+            var due = parseFloat($('#AmountDue').val())
+            var paid = parseFloat($('#AmountPaid').val())
+            var amnt = 0
+
+            if (due > paid) {
+               amnt = paid
+            } else {
+               amnt = due
+            }
+
             $('#loader').removeClass('gone')
+            
+            $.ajax({
+               url : "{{ route('paymentTransactions.transact-bill-bulk') }}",
+               type : 'GET',
+               data : {
+                  id : "{{ $customer->id }}",
+                  AmountPaid : amnt,
+                  ORNumber : $('#ORNumber').val(),
+               },
+               success : function(res) {
+                  Toast.fire({
+                     icon : 'success',
+                     text : 'Payment successful!'
+                  })
+                  $('#loader').addClass('gone')
+                  window.location.href = "{{ route('paymentTransactions.payments') }}"
+               },
+               error : function(err) {
+                  Toast.fire({
+                     icon : 'error',
+                     text : 'Error transacting payment!'
+                  })
+                  $('#loader').addClass('gone')
+               }
+            })
          }
       }
    </script>
