@@ -77,6 +77,8 @@ Route::resource('billings', App\Http\Controllers\BillingsController::class);
 Route::post('/payment_transactions/transact-bills-payment', [App\Http\Controllers\PaymentTransactionsController::class, 'transactBillsPayment'])->name('paymentTransactions.transact-bills-payment');
 Route::get('/payment_transactions/monthly-sales', [App\Http\Controllers\PaymentTransactionsController::class, 'monthlySales'])->name('paymentTransactions.monthly-sales');
 Route::get('/payment_transactions/dashboard-graph-data', [App\Http\Controllers\PaymentTransactionsController::class, 'dashboardGraphData'])->name('paymentTransactions.dashboard-graph-data');
+Route::get('/payment_transactions/payments', [App\Http\Controllers\PaymentTransactionsController::class, 'payments'])->name('paymentTransactions.payments');
+Route::get('/payment_transactions/payment-module/{id}', [App\Http\Controllers\PaymentTransactionsController::class, 'paymentModule'])->name('paymentTransactions.payment-module');
 Route::resource('paymentTransactions', App\Http\Controllers\PaymentTransactionsController::class);
 
 Route::get('/expenses/my-expenses', [App\Http\Controllers\ExpensesController::class, 'myExpenses'])->name('expenses.my-expenses');

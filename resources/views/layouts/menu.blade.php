@@ -55,6 +55,15 @@
     </ul>
 </li>
 
+{{-- PAYMENT --}}
+<li class="nav-item">
+    <a href="{{ route('paymentTransactions.payments') }}"
+       class="nav-link {{ Request::is('paymentTransactions.payments*') ? 'active' : '' }}">
+       <i class="fas fa-dollar-sign nav-icon"></i>
+        <p>Bills Payment</p>
+    </a>
+</li>
+
 {{-- EXPENSES --}}
 <li class="nav-item has-treeview">
     <a href="#" class="nav-link">

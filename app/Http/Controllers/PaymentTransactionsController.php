@@ -316,4 +316,65 @@ class PaymentTransactionsController extends AppBaseController
 
         return response()->json($sales, 200);
     }
+
+    public function payments(Request $request) {
+        $param = $request['param'];
+        if (isset($param)) {
+            $data = DB::table('Customers')
+                ->leftJoin('CustomerTechnical', 'Customers.CustomerTechnicalId', '=', 'CustomerTechnical.id')
+                ->leftJoin('Towns', 'Customers.Town', '=', 'Towns.id')
+                ->leftJoin('Barangays', 'Customers.Barangay', '=', 'Barangays.id')
+                ->whereRaw("Trash IS NULL AND (FullName LIKE '%" . $param . "%' OR Customers.id LIKE '%" . $param . "%' OR Customers.ContactNumber LIKE '%" . $param . "%' OR CustomerTechnical.MacAddress LIKE '%" . $param . "%')")
+                ->select(
+                    'Customers.id',
+                    'FullName',
+                    'Towns.Town',
+                    'Barangays.Barangay',
+                    'Purok',
+                    'ContactNumber',
+                    'CustomerTechnical.MacAddress',
+                    'CustomerTechnical.SpeedSubscribed',
+                )
+                ->paginate(50);
+        } else {
+            $data = [];
+        }
+
+        return view('/payment_transactions/payments', [
+            'data' => $data
+        ]);
+    }
+
+    public function paymentModule($id) {
+        $customer = DB::table('Customers')
+            ->leftJoin('Towns', 'Customers.Town', '=', 'Towns.id')
+            ->leftJoin('Barangays', 'Customers.Barangay', '=', 'Barangays.id')
+            ->leftJoin('users', 'users.id', '=', 'Customers.UserId')
+            ->select(
+                'FullName',
+                'Customers.id',
+                'Towns.Town',
+                'Barangays.Barangay',
+                'Purok',
+                'Customers.Email',
+                'ContactNumber',
+                'DateConnected',
+                'Status',
+                'CustomerTechnicalId',
+                'users.name',
+                'Customers.created_at',
+            )
+            ->where('Customers.id', $id)
+            ->first();
+
+        $unpaidBills = Billings::where('CustomerId', $id)
+            ->whereRaw("Balance > 0")
+            ->orderByDesc("BillingMonth")
+            ->get();
+
+        return view('/payment_transactions/payment_module', [
+            'customer' => $customer,
+            'unpaidBills' => $unpaidBills,
+        ]);
+    }
 }

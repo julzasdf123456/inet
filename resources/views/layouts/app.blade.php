@@ -51,6 +51,10 @@
         .ico-tab-mini {
             margin-right: 4px;
         }
+
+        .gone {
+            display: none;
+        }
     </style>
 
     @yield('third_party_stylesheets')
@@ -200,7 +204,7 @@
      */
     function fetchBarangayFromTown(townId, prevValue) {
         $.ajax({
-            url : '/barangays/get-barangays-json/' + townId,
+            url : '{{ url("/barangays/get-barangays-json") }}/' + townId,
             type: "GET",
             dataType : "json",
             success : function(data) {
