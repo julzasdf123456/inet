@@ -19,6 +19,9 @@
         $(document).ready(function() {
             // AUTOGENERATE BILLS
             autoGenerateBills()
+
+            // AUTO GENRATE DUE NOTIFS
+            generateDueNotifs()
         })
 
         function autoGenerateBills() {
@@ -32,6 +35,22 @@
                     Toast.fire({
                         icon : 'error',
                         text : 'Bill generation error'
+                    })
+                }
+            })
+        }
+
+        function generateDueNotifs() {
+            $.ajax({
+                url : "{{ route('billings.generate-bill-due-notifs') }}",
+                type : 'GET',
+                success : function(res) {
+                    console.log('Due Notifications Generated')
+                },
+                error : function(err) {
+                    Toast.fire({
+                        icon : 'error',
+                        text : 'Due generation error'
                     })
                 }
             })

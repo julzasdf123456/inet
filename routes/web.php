@@ -72,6 +72,7 @@ Route::resource('barangays', App\Http\Controllers\BarangaysController::class);
 Route::get('/billings/auto-generate-bills', [App\Http\Controllers\BillingsController::class, 'autoGenerateBills'])->name('billings.auto-generate-bills');
 Route::get('/billings/auto-generate-bills-bulk', [App\Http\Controllers\BillingsController::class, 'autoGenerateBillsBulk'])->name('billings.auto-generate-bills-bulk');
 Route::get('/billings/all-unpaid-bills', [App\Http\Controllers\BillingsController::class, 'allUnpaidBills'])->name('billings.all-unpaid-bills');
+Route::get('/billings/generate-bill-due-notifs', [App\Http\Controllers\BillingsController::class, 'generateBillDueNotifs'])->name('billings.generate-bill-due-notifs');
 Route::resource('billings', App\Http\Controllers\BillingsController::class);
 
 Route::post('/payment_transactions/transact-bills-payment', [App\Http\Controllers\PaymentTransactionsController::class, 'transactBillsPayment'])->name('paymentTransactions.transact-bills-payment');
@@ -100,3 +101,5 @@ Route::resource('ticketLogs', App\Http\Controllers\TicketLogsController::class);
 Route::resource('ticketTypes', App\Http\Controllers\TicketTypesController::class);
 
 Route::resource('tickets', App\Http\Controllers\TicketsController::class);
+
+Route::resource('sMSNotifications', App\Http\Controllers\SMSNotificationsController::class);

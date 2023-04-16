@@ -13,6 +13,7 @@ use App\Models\Customers;
 use App\Models\CustomerTechnical;
 use App\Models\IDGenerator;
 use App\Models\Billings;
+use App\Models\SMSNotifications;
 use App\Models\PaymentTransactions;
 use \DateTime;
 use Illuminate\Support\Facades\DB;
@@ -321,5 +322,43 @@ class BillingsController extends AppBaseController
         return view('/billings/all_unpaid_bills', [
             'data' => $data,
         ]);
+    }
+
+    public function generateBillDueNotifs(Request $request) {
+        $data = DB::table('Billings')
+            ->leftJoin('Customers', 'Billings.CustomerId', '=', 'Customers.id')
+            ->whereRaw("(DueDate BETWEEN GETDATE() AND dateadd(day, +5, convert(date, getdate()))) AND Balance > 0")
+            ->select(
+                'Customers.ContactNumber',
+                'Customers.FullName',
+                'Billings.Balance',
+                'Billings.CustomerId',
+                'Billings.BillingMonth',
+                'Billings.DueDate'
+            )
+            ->get();
+
+        foreach($data as $item) {
+            $notifs = SMSNotifications::where('CustomerId', $item->CustomerId)
+                ->where('BillingMonth', $item->BillingMonth)
+                ->first();
+            
+            if ($notifs != null) {
+
+            } else {
+                $notifs = new SMSNotifications;
+                $notifs->id = IDGenerator::generateIDandRandString();
+                $notifs->ContactNumber = $item->ContactNumber;
+                $notifs->Message = "Good day, MR/MS. " . $item->FullName . ', \n\nPlease be advised that your DJTAL internet payable amounting P ' . number_format($item->Balance, 2) .
+                    " will due on " . date('M d, Y', strtotime($item->DueDate)) . ". Kindly settle the said amount to avoid disconnection. If you have already paid, kindly disregard this message. Thank you!";
+                $notifs->CustomerId = $item->CustomerId;
+                $notifs->BillingMonth = $item->BillingMonth;
+                $notifs->Type = 'BILLS DUE';
+                $notifs->Status = 'PENDING';
+                $notifs->save();
+            }
+        }
+
+        return response()->json('ok');
     }
 }

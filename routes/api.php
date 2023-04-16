@@ -9,6 +9,7 @@ use App\Http\Controllers\API\BillsController;
 use App\Http\Controllers\API\NotifiersController;
 use App\Http\Controllers\API\VerificationController;
 use App\Http\Controllers\API\ThirdPartyAPI;
+use App\Http\Controllers\API\Notifications;
 
 /*
 |--------------------------------------------------------------------------
@@ -65,3 +66,9 @@ Route::group(['middleware' => 'auth:api'], function(){
  */
 Route::get('get-bill-by-account-and-period', [ThirdPartyAPI::class, 'getBillsByAccountAndPeriod']);
 Route::post('transact', [ThirdPartyAPI::class, 'transact']);
+
+/**
+ * NOTIFICATIONS VIA SMS
+ */
+Route::get('get-random-notification', [Notifications::class, 'getRandomNotification']);
+Route::get('update-sms', [Notifications::class, 'updateSMSNotification']);
