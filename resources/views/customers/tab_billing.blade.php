@@ -4,6 +4,8 @@
    @endphp
    <p class="text-muted" style="margin: 0px; padding: 0px;">Unpaid Balance</p>
    <h2 class="{{ $bal<=0 ? 'text-success' : 'text-danger' }}">₱ {{ number_format($bal, 2) }}</h2>
+
+   <button class="btn btn-xs btn-primary float-right" data-toggle="modal" data-target="#modal-add-bill" style="margin-bottom: 5px;">Add Bill</button>
    <br>
 </div>
 
@@ -87,6 +89,48 @@
    </div>
 </div>
 
+{{-- ADD BILL --}}
+<div class="modal fade" id="modal-add-bill" aria-hidden="true" style="display: none;">
+   <div class="modal-dialog">
+       <div class="modal-content">
+           <div class="modal-header">
+               <h4 class="modal-title">Create New Bill</h4>
+               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                   <span aria-hidden="true">×</span>
+               </button>
+           </div>
+           <div class="modal-body">
+               <div class="form-group col-md-12">
+                  <label for="Month">Month</label>
+                  <select name="Month" id="Month" class="form-control form-control-sm">
+                     <option value="01" >JANUARY</option>
+                     <option value="02" >FEBRUARY</option>
+                     <option value="03" >MARCH</option>
+                     <option value="04" >APRIL</option>
+                     <option value="05" >MAY</option>
+                     <option value="06" >JUNE</option>
+                     <option value="07" >JULY</option>
+                     <option value="08" >AUGUST</option>
+                     <option value="09" >SEPTEMBER</option>
+                     <option value="10" >OCTOBER</option>
+                     <option value="11" >NOVEMBER</option>
+                     <option value="12" >DECEMBER</option>
+                  </select>
+               </div>
+
+               <div class="form-group col-md-12">
+                     <label for="Year">Year</label>
+                     <input type="text" maxlength="4" id="Year" name="Year" placeholder="Year" value="{{ isset($_GET['Year']) ? $_GET['Year'] : date('Y') }}" class="form-control form-control-sm" required>
+               </div>
+           </div>
+           <div class="modal-footer justify-content-between">
+               <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Cancel</button>
+               <button type="button" class="btn btn-sm btn-primary" id="add-bill"><i class="fas fa-plus ico-tab-mini"></i>Create Bill</button>
+           </div>
+       </div>
+   </div>
+</div>
+
 @push('page_scripts')
    <script>
       var paymentBillId = ''
@@ -112,6 +156,17 @@
             $('#PaymentDate').val('')
             $('#Amount').val('')
          });
+
+         $('#add-bill').on('click', function() {
+            if (jQuery.isEmptyObject($('#Year').val())) {
+               Toast.fire({
+                  icon : 'warning',
+                  text : 'Please input year'
+               })
+            } else {
+               createBill()
+            }
+         })
       })
 
       function cancelBill(id) {
@@ -177,6 +232,31 @@
                Toast.fire({
                   icon : 'error',
                   text : 'Error receiving payment!'
+               })
+            }
+         })
+      }
+
+      function createBill() {
+         $.ajax({
+            url : "{{ route('billings.create-bill') }}",
+            type : 'GET',
+            data : {
+               AccountNo : "{{ $customer->id }}",
+               Month : $('#Month').val(),
+               Year : $('#Year').val()
+            },
+            success : function(res) {
+               Toast.fire({
+                  icon : 'success',
+                  text : 'Bill Added!'
+               })
+               location.reload()
+            },
+            error : function(err) {
+               Toast.fire({
+                  icon : 'error',
+                  text : 'Error adding bill!'
                })
             }
          })

@@ -361,4 +361,61 @@ class BillingsController extends AppBaseController
 
         return response()->json('ok');
     }
+
+    public function createBill(Request $request) {
+        $accoutno = $request['AccountNo'];
+        $month = $request['Month'];
+        $year = $request['Year'];
+        $period = $year . '-' . $month . '-01';
+
+        $customers = DB::table('Customers')
+            ->leftJoin('Towns', 'Customers.Town', '=', 'Towns.id')
+            ->leftJoin('Barangays', 'Customers.Barangay', '=', 'Barangays.id')
+            ->leftJoin('users', 'users.id', '=', 'Customers.UserId')
+            ->select(
+                'FullName',
+                'Customers.id',
+                'Towns.Town',
+                'Barangays.Barangay',
+                'Purok',
+                'Customers.Email',
+                'ContactNumber',
+                'DateConnected',
+                'Status',
+                'CustomerTechnicalId',
+                'users.name',
+                'Customers.created_at',
+            )
+            ->where('Customers.id', $accoutno)
+            ->first();
+
+        $customersTechnical = CustomerTechnical::find($customers->CustomerTechnicalId);
+
+        if ($customers != null && $customersTechnical != null) {
+            // CHECK BILL
+            $bill = Billings::where('CustomerId', $accoutno)
+                ->where('BillingMonth', $period)
+                ->first();
+
+            if ($bill != null) {
+
+            } else {
+                $dueDate = date('Y-m-', strtotime($period . ' +1 month')) . date('d', strtotime($customers->DateConnected));
+
+                $billings = new Billings;
+                $billings->id = IDGenerator::generateIDandRandString();
+                $billings->CustomerId = $accoutno;
+                $billings->BillNumber = IDGenerator::generateID();
+                $billings->BillingMonth = $period;
+                $billings->BillingDate = date('Y-m-d');
+                $billings->DueDate = $dueDate;
+                $billings->BillAmountDue = $customersTechnical->MonthlyPayment;
+                $billings->TotalAmountDue = $customersTechnical->MonthlyPayment;
+                $billings->Balance = $customersTechnical->MonthlyPayment;
+                $billings->save();
+            }
+        }
+
+        return response()->json('ok', 200);
+    }
 }
