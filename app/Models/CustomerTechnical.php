@@ -46,7 +46,7 @@ class CustomerTechnical extends Model
         'ModemId',
         'ModemBrand',
         'ModemNumber',
-        'UserId'
+        'UserId',
     ];
 
     /**
