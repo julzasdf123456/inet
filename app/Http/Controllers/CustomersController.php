@@ -181,6 +181,8 @@ class CustomersController extends AppBaseController
                 'Status',
                 'CustomerTechnicalId',
                 'users.name',
+                'Latitude',
+                'Longitude',
                 'Customers.created_at',
             )
             ->where('Customers.id', $id)

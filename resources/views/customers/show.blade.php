@@ -89,6 +89,9 @@
                         <li class="nav-item"><a class="nav-link" href="#modem-history" data-toggle="tab">
                             <i class="fas fa-history"></i>
                             Modem & Subscription</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#location" data-toggle="tab">
+                            <i class="fas fa-map-marker-alt"></i>
+                            Location</a></li>
                     </ul>
                 </div>
 
@@ -104,6 +107,10 @@
 
                         <div class="tab-pane" id="modem-history">
                             @include('customers.tab_modem_history')
+                        </div>
+
+                        <div class="tab-pane" id="location">
+                            @include('customers.tab_location')
                         </div>
                     </div>
                 </div>
