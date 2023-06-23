@@ -40,44 +40,87 @@ class CustomersController extends AppBaseController
     public function index(Request $request)
     {
         $param = $request['param'];
+        $town = $request['Town'];
+
         if (isset($param)) {
-            $data = DB::table('Customers')
-                ->leftJoin('CustomerTechnical', 'Customers.CustomerTechnicalId', '=', 'CustomerTechnical.id')
-                ->leftJoin('Towns', 'Customers.Town', '=', 'Towns.id')
-                ->leftJoin('Barangays', 'Customers.Barangay', '=', 'Barangays.id')
-                ->whereRaw("Trash IS NULL AND (FullName LIKE '%" . $param . "%' OR Customers.id LIKE '%" . $param . "%' OR Customers.ContactNumber LIKE '%" . $param . "%' OR CustomerTechnical.MacAddress LIKE '%" . $param . "%')")
-                ->select(
-                    'Customers.id',
-                    'FullName',
-                    'Towns.Town',
-                    'Barangays.Barangay',
-                    'Purok',
-                    'ContactNumber',
-                    'CustomerTechnical.MacAddress',
-                    'CustomerTechnical.SpeedSubscribed',
-                )
-                ->paginate(25);
+            if ($town != 'All') {
+                $data = DB::table('Customers')
+                    ->leftJoin('CustomerTechnical', 'Customers.CustomerTechnicalId', '=', 'CustomerTechnical.id')
+                    ->leftJoin('Towns', 'Customers.Town', '=', 'Towns.id')
+                    ->leftJoin('Barangays', 'Customers.Barangay', '=', 'Barangays.id')
+                    ->whereRaw("Customers.Town='" . $town . "'")
+                    ->whereRaw("Trash IS NULL AND (FullName LIKE '%" . $param . "%' OR Customers.id LIKE '%" . $param . "%' OR Customers.ContactNumber LIKE '%" . $param . "%' OR CustomerTechnical.MacAddress LIKE '%" . $param . "%')")
+                    ->select(
+                        'Customers.id',
+                        'FullName',
+                        'Towns.Town',
+                        'Barangays.Barangay',
+                        'Purok',
+                        'ContactNumber',
+                        'CustomerTechnical.MacAddress',
+                        'CustomerTechnical.SpeedSubscribed',
+                    )
+                    ->paginate(100);
+            } else {
+                $data = DB::table('Customers')
+                    ->leftJoin('CustomerTechnical', 'Customers.CustomerTechnicalId', '=', 'CustomerTechnical.id')
+                    ->leftJoin('Towns', 'Customers.Town', '=', 'Towns.id')
+                    ->leftJoin('Barangays', 'Customers.Barangay', '=', 'Barangays.id')
+                    ->whereRaw("Trash IS NULL AND (FullName LIKE '%" . $param . "%' OR Customers.id LIKE '%" . $param . "%' OR Customers.ContactNumber LIKE '%" . $param . "%' OR CustomerTechnical.MacAddress LIKE '%" . $param . "%')")
+                    ->select(
+                        'Customers.id',
+                        'FullName',
+                        'Towns.Town',
+                        'Barangays.Barangay',
+                        'Purok',
+                        'ContactNumber',
+                        'CustomerTechnical.MacAddress',
+                        'CustomerTechnical.SpeedSubscribed',
+                    )
+                    ->paginate(100);
+            }            
         } else {
-            $data = DB::table('Customers')
-                ->leftJoin('CustomerTechnical', 'Customers.CustomerTechnicalId', '=', 'CustomerTechnical.id')
-                ->leftJoin('Towns', 'Customers.Town', '=', 'Towns.id')
-                ->leftJoin('Barangays', 'Customers.Barangay', '=', 'Barangays.id')
-                ->whereRaw("Trash IS NULL")
-                ->select(
-                    'Customers.id',
-                    'FullName',
-                    'Towns.Town',
-                    'Barangays.Barangay',
-                    'Purok',
-                    'ContactNumber',
-                    'CustomerTechnical.MacAddress',
-                    'CustomerTechnical.SpeedSubscribed',
-                )
-                ->paginate(25);
+            if ($town != 'All') {
+                $data = DB::table('Customers')
+                    ->leftJoin('CustomerTechnical', 'Customers.CustomerTechnicalId', '=', 'CustomerTechnical.id')
+                    ->leftJoin('Towns', 'Customers.Town', '=', 'Towns.id')
+                    ->leftJoin('Barangays', 'Customers.Barangay', '=', 'Barangays.id')
+                    ->whereRaw("Customers.Town='" . $town . "'")
+                    ->whereRaw("Trash IS NULL")
+                    ->select(
+                        'Customers.id',
+                        'FullName',
+                        'Towns.Town',
+                        'Barangays.Barangay',
+                        'Purok',
+                        'ContactNumber',
+                        'CustomerTechnical.MacAddress',
+                        'CustomerTechnical.SpeedSubscribed',
+                    )
+                    ->paginate(200);
+            } else {
+                $data = DB::table('Customers')
+                    ->leftJoin('CustomerTechnical', 'Customers.CustomerTechnicalId', '=', 'CustomerTechnical.id')
+                    ->leftJoin('Towns', 'Customers.Town', '=', 'Towns.id')
+                    ->leftJoin('Barangays', 'Customers.Barangay', '=', 'Barangays.id')
+                    ->whereRaw("Trash IS NULL")
+                    ->select(
+                        'Customers.id',
+                        'FullName',
+                        'Towns.Town',
+                        'Barangays.Barangay',
+                        'Purok',
+                        'ContactNumber',
+                        'CustomerTechnical.MacAddress',
+                        'CustomerTechnical.SpeedSubscribed',
+                    )
+                    ->paginate(25);
+            }           
         }
 
         return view('customers.index', [
             'data' => $data,
+            'towns' => Towns::orderBy('Town')->get(),
         ]);
     }
 
@@ -359,4 +402,5 @@ class CustomersController extends AppBaseController
 
         return redirect(route('customers.trash'));
     }
+
 }

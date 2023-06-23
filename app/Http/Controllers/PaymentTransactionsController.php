@@ -412,10 +412,10 @@ class PaymentTransactionsController extends AppBaseController
 
         foreach($unpaidBills as $item) {
             if ($amountPaid > 0) {
-                if (floatval($item->Balance) > $amountPaid) {
+                if (floatval($item->Balance) >= $amountPaid) {
                     $balance = floatval($item->Balance) - $amountPaid;
                     $item->Balance = $balance;
-                    $item->PaidAmount = $amountPaid;
+                    $item->PaidAmount = $item->PaidAmount + $amountPaid;
                     $item->save();
 
                     $transactions = new PaymentTransactions;
@@ -434,7 +434,7 @@ class PaymentTransactionsController extends AppBaseController
                 } else {
                     $bal = $item->Balance;
                     $item->Balance = 0;
-                    $item->PaidAmount = $item->TotalAmountDue;
+                    $item->PaidAmount = $item->PaidAmount + $bal;
                     $item->save();
 
                     $transactions = new PaymentTransactions;
@@ -445,7 +445,7 @@ class PaymentTransactionsController extends AppBaseController
                     $transactions->ORNumber = $orNumber;
                     $transactions->PaymentDate = date('Y-m-d');
                     $transactions->BillingMonth = $item->BillingMonth;
-                    $transactions->AmountPaid = $item->TotalAmountDue;
+                    $transactions->AmountPaid = $bal;
                     $transactions->UserId = Auth::id();
                     $transactions->save();
 
@@ -455,5 +455,56 @@ class PaymentTransactionsController extends AppBaseController
         }
 
         return response()->json('ok', 200);
+    }
+
+    public function printPayment($orNumber, $custId) {        
+        $customers = DB::table('Customers')
+            ->leftJoin('Towns', 'Customers.Town', '=', 'Towns.id')
+            ->leftJoin('Barangays', 'Customers.Barangay', '=', 'Barangays.id')
+            ->leftJoin('users', 'users.id', '=', 'Customers.UserId')
+            ->select(
+                'FullName',
+                'Customers.id',
+                'Towns.Town',
+                'Barangays.Barangay',
+                'Purok',
+                'Customers.Email',
+                'ContactNumber',
+                'DateConnected',
+                'Status',
+                'CustomerTechnicalId',
+                'users.name',
+                'Latitude',
+                'Longitude',
+                'Customers.created_at',
+            )
+            ->where('Customers.id', $custId)
+            ->first();
+
+        $payment = PaymentTransactions::where('ORNumber', $orNumber)->orderBy('created_at')->first();
+
+        $payments = DB::table('PaymentTransactions')
+                ->leftJoin('Billings', function($join) {
+                    $join->on('PaymentTransactions.CustomerId', '=', 'Billings.CustomerId')                    
+                        ->on('PaymentTransactions.BillingMonth', '=', 'Billings.BillingMonth');
+                })
+                ->whereRaw("ORNumber='" . $orNumber . "' AND PaymentTransactions.CustomerId='" . $custId . "'")
+                ->select(
+                    'PaymentTransactions.*',
+                    'Billings.TotalAmountDue',
+                    'Billings.PaidAmount',
+                    'Billings.Balance',
+                )
+                ->orderBy('Billings.BillingMonth')
+                ->get();
+
+        $customersTechnical = CustomerTechnical::find($customers->CustomerTechnicalId);
+
+        return view('/payment_transactions/print_payment', [
+            'customer' => $customers,
+            'payment' => $payment,
+            'payments' => $payments,
+            'customerTechnical' => $customersTechnical,
+        ]);
     }
 }

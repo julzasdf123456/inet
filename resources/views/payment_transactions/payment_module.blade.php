@@ -120,22 +120,25 @@
 
       function submitPayment() {
          var paid = $('#AmountPaid').val()
+         var orNo = $('#ORNumber').val()
 
-         if (jQuery.isEmptyObject(paid)) {
+         if (jQuery.isEmptyObject(paid) | jQuery.isEmptyObject(orNo)) {
             Toast.fire({
                icon : 'warning',
-               text : 'Please add amount!'
+               text : 'Please add amount and OR number!'
             })
          } else {
             var due = parseFloat($('#AmountDue').val())
             var paid = parseFloat($('#AmountPaid').val())
             var amnt = 0
 
-            if (due > paid) {
+            if (due >= paid) {
                amnt = paid
             } else {
                amnt = due
             }
+
+            // alert(amnt)
 
             $('#loader').removeClass('gone')
             
@@ -145,7 +148,7 @@
                data : {
                   id : "{{ $customer->id }}",
                   AmountPaid : amnt,
-                  ORNumber : $('#ORNumber').val(),
+                  ORNumber : orNo,
                },
                success : function(res) {
                   Toast.fire({
@@ -153,7 +156,7 @@
                      text : 'Payment successful!'
                   })
                   $('#loader').addClass('gone')
-                  window.location.href = "{{ route('paymentTransactions.payments') }}"
+                  window.location.href = "{{ url('payment_transactions/print-payment') }}/" + orNo + "/" + "{{ $customer->id }}"
                },
                error : function(err) {
                   Toast.fire({

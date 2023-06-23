@@ -418,4 +418,39 @@ class BillingsController extends AppBaseController
 
         return response()->json('ok', 200);
     }
+    
+    public function printBill($id) {
+        $bill = Billings::find($id);
+        
+        $customers = DB::table('Customers')
+            ->leftJoin('Towns', 'Customers.Town', '=', 'Towns.id')
+            ->leftJoin('Barangays', 'Customers.Barangay', '=', 'Barangays.id')
+            ->leftJoin('users', 'users.id', '=', 'Customers.UserId')
+            ->select(
+                'FullName',
+                'Customers.id',
+                'Towns.Town',
+                'Barangays.Barangay',
+                'Purok',
+                'Customers.Email',
+                'ContactNumber',
+                'DateConnected',
+                'Status',
+                'CustomerTechnicalId',
+                'users.name',
+                'Latitude',
+                'Longitude',
+                'Customers.created_at',
+            )
+            ->where('Customers.id', $bill->CustomerId)
+            ->first();
+
+        $customersTechnical = CustomerTechnical::find($customers->CustomerTechnicalId);
+
+        return view('/billings/print_bill', [
+            'bill' => $bill,
+            'customer' => $customers,
+            'customerTechnical' => $customersTechnical,
+        ]);
+    }
 }

@@ -12,17 +12,21 @@
         <br>
         <!-- SEARCH BAR -->
         <form action="{{ route('customers.index') }}" method="GET" class="row">
-            <div class="col-md-8 offset-md-2">
-                <div class="input-group">
-                    
-                    <input type="search" id='searchparam' name="param" class="form-control" placeholder="Type Name, Account Number, or Mac Address" autofocus value="{{ isset($_GET['param']) ? $_GET['param'] : '' }}">
-                    <div class="input-group-append">
-                        <button type="submit" class="btn btn-default" id="searchBtn">
-                            <i class="fa fa-search"></i>
-                        </button>
-                    </div>
-                    
-                </div>
+            <div class="col-md-5 offset-md-2">
+                <input type="search" id='searchparam' name="param" class="form-control" placeholder="Type Name, Account Number, or Mac Address" autofocus value="{{ isset($_GET['param']) ? $_GET['param'] : '' }}">                    
+            </div>
+            <div class="col-md-1">
+                <select name="Town" id="Town" class="form-control">
+                    <option value="All">All</option>
+                    @foreach ($towns as $item)
+                        <option value="{{ $item->id }}" {{ isset($_GET['Town']) && $_GET['Town']==$item->id ? 'selected' : '' }}>{{ $item->Town }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary" id="searchBtn">
+                    <i class="fa fa-search"> </i> Search
+                </button>
             </div>
         </form>
     </div>    

@@ -40,7 +40,8 @@
                   <button class="btn btn-xs text-danger float-right" title="Delete This Bill" onclick="cancelBill('{{ $item->id }}')"><i class="fas fa-trash"></i></button>
                   <a class="btn btn-xs text-primary float-right" href="{{ route('billings.edit', [$item->id]) }}" title="Edit this bill"><i class="fas fa-pen"></i></a>
                   <button class="btn btn-xs text-success float-right" title="Pay this bill" onclick="payBill('{{ $item->id }}')"><i class="fas fa-clipboard-check"></i></button>
-               @endif               
+               @endif  
+               <a class="btn btn-xs text-warning float-right" href="{{ route('billings.print-bill', [$item->id]) }}" title="Print Bill"><i class="fas fa-print"></i></a>             
             </td>
           </tr>
       @endforeach

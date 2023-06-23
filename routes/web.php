@@ -74,6 +74,7 @@ Route::get('/billings/auto-generate-bills-bulk', [App\Http\Controllers\BillingsC
 Route::get('/billings/all-unpaid-bills', [App\Http\Controllers\BillingsController::class, 'allUnpaidBills'])->name('billings.all-unpaid-bills');
 Route::get('/billings/generate-bill-due-notifs', [App\Http\Controllers\BillingsController::class, 'generateBillDueNotifs'])->name('billings.generate-bill-due-notifs');
 Route::get('/billings/create-bill', [App\Http\Controllers\BillingsController::class, 'createBill'])->name('billings.create-bill');
+Route::get('/billings/print-bill/{id}', [App\Http\Controllers\BillingsController::class, 'printBill'])->name('billings.print-bill');
 Route::resource('billings', App\Http\Controllers\BillingsController::class);
 
 Route::post('/payment_transactions/transact-bills-payment', [App\Http\Controllers\PaymentTransactionsController::class, 'transactBillsPayment'])->name('paymentTransactions.transact-bills-payment');
@@ -82,6 +83,7 @@ Route::get('/payment_transactions/dashboard-graph-data', [App\Http\Controllers\P
 Route::get('/payment_transactions/payments', [App\Http\Controllers\PaymentTransactionsController::class, 'payments'])->name('paymentTransactions.payments');
 Route::get('/payment_transactions/payment-module/{id}', [App\Http\Controllers\PaymentTransactionsController::class, 'paymentModule'])->name('paymentTransactions.payment-module');
 Route::get('/payment_transactions/transact-bill-bulk', [App\Http\Controllers\PaymentTransactionsController::class, 'transactBillsPaymentBulk'])->name('paymentTransactions.transact-bill-bulk');
+Route::get('/payment_transactions/print-payment/{or}/{id}', [App\Http\Controllers\PaymentTransactionsController::class, 'printPayment'])->name('paymentTransactions.print-payment');
 Route::resource('paymentTransactions', App\Http\Controllers\PaymentTransactionsController::class);
 
 Route::get('/expenses/my-expenses', [App\Http\Controllers\ExpensesController::class, 'myExpenses'])->name('expenses.my-expenses');
