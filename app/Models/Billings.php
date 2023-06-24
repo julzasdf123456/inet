@@ -60,7 +60,7 @@ class Billings extends Model
         'Notes',
         'SMSSent',
         'EmailSent',
-        'Trash'
+        'Trash',
     ];
 
     /**
@@ -72,9 +72,9 @@ class Billings extends Model
         'id' => 'string',
         'BillNumber' => 'string',
         'CustomerId' => 'string',
-        'BillingMonth' => 'date',
-        'BillingDate' => 'date',
-        'DueDate' => 'date',
+        'BillingMonth' => 'string',
+        'BillingDate' => 'string',
+        'DueDate' => 'string',
         'BillAmountDue' => 'decimal:2',
         'AdditionalPayments' => 'decimal:2',
         'Deductions' => 'decimal:2',

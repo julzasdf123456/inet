@@ -10,6 +10,7 @@ use App\Models\ServiceConnectionCrew;
 use App\Models\Towns;
 use App\Models\Barangays;
 use App\Models\Customers;
+use App\Models\Billings;
 use App\Models\CustomerTechnical;
 use App\Models\PaymentTransactions;
 
@@ -70,5 +71,19 @@ class OtherData extends Controller {
         $payments = PaymentTransactions::create($input);
 
         return response()->json($payments, 200);
+    }
+
+    public function receiveBills(Request $request) {
+        $input = $request->all();
+
+        $bill = Billings::where('id', $input['id'])
+            ->update([
+                'PaidAmount' => $input['PaidAmount'],
+                'Balance' => $input['Balance'],
+            ]);
+
+        $bill = Billings::find($input['id']);
+
+        return response()->json($bill, 200);
     }
 }

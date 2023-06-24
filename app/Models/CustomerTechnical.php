@@ -63,7 +63,8 @@ class CustomerTechnical extends Model
         'ModemId' => 'string',
         'ModemBrand' => 'string',
         'ModemNumber' => 'string',
-        'UserId' => 'string'
+        'UserId' => 'string',
+        'created_at' => 'string',
     ];
 
     /**

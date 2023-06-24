@@ -11,6 +11,7 @@ use App\Http\Controllers\API\VerificationController;
 use App\Http\Controllers\API\ThirdPartyAPI;
 use App\Http\Controllers\API\Notifications;
 use App\Http\Controllers\API\OtherData;
+use App\Http\Controllers\API\CustomersController;
 
 /*
 |--------------------------------------------------------------------------
@@ -74,8 +75,20 @@ Route::post('transact', [ThirdPartyAPI::class, 'transact']);
 Route::get('get-random-notification', [Notifications::class, 'getRandomNotification']);
 Route::get('update-sms', [Notifications::class, 'updateSMSNotification']);
 
+/**
+ * COLLECTORS APP
+ */
 Route::get('get-towns', [OtherData::class, 'getTowns']);
 Route::get('get-barangays', [OtherData::class, 'getBarangays']);
 Route::post('receive-customers', [OtherData::class, 'receiveCustomers']);
 Route::post('receive-customers-technical', [OtherData::class, 'receiveCustomersTechnical']);
 Route::post('receive-payment', [OtherData::class, 'receivePayment']);
+Route::get('get-all-customers', [CustomersController::class, 'getAllCustomers']);
+Route::get('get-all-customers-technical', [CustomersController::class, 'getAllCustomersTechnical']);
+Route::get('get-all-bills', [CustomersController::class, 'getAllBills']);
+Route::post('receive-bills', [OtherData::class, 'receiveBills']);
+
+// ONLINE HUB
+Route::get('get-account-by-account-number', [CustomersController::class, 'getAccountByAccountNumber']);
+Route::get('get-latest-bills', [CustomersController::class, 'getLatestBills']);
+Route::get('get-printable-bill', [CustomersController::class, 'getPrintableBill']);
