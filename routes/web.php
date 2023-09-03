@@ -59,6 +59,9 @@ Route::resource('thirdPartyTransactions', App\Http\Controllers\ThirdPartyTransac
 Route::get('/customers/get-dashboard-statistics', [App\Http\Controllers\CustomersController::class, 'getDashboardStatistics'])->name('customers.get-dashboard-statistics');
 Route::get('/customers/trash', [App\Http\Controllers\CustomersController::class, 'trash'])->name('customers.trash');
 Route::get('/customers/restore/{id}', [App\Http\Controllers\CustomersController::class, 'restore'])->name('customers.restore');
+Route::get('/customers/double-entry-monitor', [App\Http\Controllers\CustomersController::class, 'doubleEntryMonitor'])->name('customers.double-entry-monitor');
+Route::get('/customers/double-entry-view/{name}/{town}/{barangay}', [App\Http\Controllers\CustomersController::class, 'doubleEntryView'])->name('customers.double-entry-view');
+Route::get('/customers/update-status', [App\Http\Controllers\CustomersController::class, 'updateStatus'])->name('customers.update-status');
 Route::resource('customers', App\Http\Controllers\CustomersController::class);
 
 Route::get('/customer_technicals/change-modem/{id}', [App\Http\Controllers\CustomerTechnicalController::class, 'changeModem'])->name('customerTechnicals.change-modem');

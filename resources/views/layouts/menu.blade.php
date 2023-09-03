@@ -42,8 +42,13 @@
             </a>
         </li>
 
-        <li class="nav-header">                
-            Others
+        <li class="nav-header">Others</li>
+        <li class="nav-item">
+            <a href="{{ route('customers.double-entry-monitor') }}"
+            class="nav-link {{ Request::is('customers.double-entry-monitor*') ? 'active' : '' }}">
+                <i class="fas fa-link nav-icon"></i>
+                <p>Double Entry Monitor</p>
+            </a>
         </li>
         <li class="nav-item">
             <a href="{{ route('customers.trash') }}"

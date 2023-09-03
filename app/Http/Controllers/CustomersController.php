@@ -403,4 +403,66 @@ class CustomersController extends AppBaseController
         return redirect(route('customers.trash'));
     }
 
+    public function doubleEntryMonitor(Request $request) {
+        $data = DB::table('Customers')
+            ->leftJoin('Towns', 'Customers.Town', '=', 'Towns.id')
+            ->leftJoin('Barangays', 'Customers.Barangay', '=', 'Barangays.id')
+            ->select(
+                'FullName', 
+                'Towns.Town', 
+                'Barangays.Barangay',
+                'Customers.Town AS TownId',
+                'Customers.Barangay AS BarangayId', 
+                DB::raw("COUNT(FullName) AS Count")
+            )
+            ->whereRaw("Trash IS NULL")
+            ->groupBy('FullName')
+            ->groupBy('Towns.Town')
+            ->groupBy('Barangays.Barangay')
+            ->groupBy('Customers.Town')
+            ->groupBy('Customers.Barangay')
+            ->having(DB::raw('COUNT(FullName)'), '>', 1)
+            ->get();
+
+        return view('/customers/double_entry_monitor', [
+            'data' => $data,
+        ]);
+    }
+
+    public function doubleEntryView($name, $town, $brgy) {
+        $customers = DB::table('Customers')
+            ->leftJoin('Towns', 'Customers.Town', '=', 'Towns.id')
+            ->leftJoin('Barangays', 'Customers.Barangay', '=', 'Barangays.id')
+            ->whereRaw("FullName='" . $name . "' AND Customers.Town='" . $town . "' AND Customers.Barangay='" . $brgy . "' AND Trash IS NULL")
+            ->select(
+                'FullName',
+                'Customers.id',
+                'Towns.Town',
+                'Barangays.Barangay',
+                'Purok',
+                'Customers.Email',
+                'ContactNumber',
+                'DateConnected',
+                'Status',
+                'CustomerTechnicalId',
+                'Latitude',
+                'Longitude',
+                'Customers.created_at',
+            )
+            ->get();
+
+        return view('/customers/double_entry_view', [
+            'customers' => $customers,
+        ]);
+    }
+
+    public function updateStatus(Request $request) {
+        $id = $request['id'];
+        $status = $request['Status'];
+
+        Customers::where('id', $id)
+            ->update(['Status' => $status]);
+
+        return response()->json('disconnected', 200);
+    }
 }

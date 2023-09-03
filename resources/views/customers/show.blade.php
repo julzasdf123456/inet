@@ -16,6 +16,14 @@
                         {!! Form::open(['route' => ['customers.destroy', $customer->id], 'method' => 'delete']) !!}
                             <a class="btn btn-xs text-primary" title="Edit Consumer Info" href="{{ route('customers.edit', [$customer->id]) }}"><i class="fas fa-pen"></i></a>
                             <a href="{{ route('customerTechnicals.change-modem', [$customer->id]) }}" class="btn btn-link btn-xs text-warning" title="Change Modem or Upgrade/Downgrade Subscribed Speed"><i class="fas fa-level-up-alt"></i></a>
+
+                            @if ($customer->Status=='ACTIVE')
+                                <button id="disconnect-btn" class="btn btn-link btn-xs text-danger" title="Disconnect Account"><i class="fas fa-exclamation-circle"></i></button>
+                            @else
+                                <button id="reconnect-btn" class="btn btn-link btn-xs text-success" title="Reconnect Account"><i class="fas fa-link"></i></button>
+                            @endif
+                            
+                            
                             {!! Form::button('<i class="fas fa-trash"></i>', ['type' => 'submit', 'class' => 'btn btn-xs text-danger', 'onclick' => "return confirm('Are you sure?')"]) !!}
                         {!! Form::close() !!}
                     </div>
@@ -118,3 +126,87 @@
         </div>
     </div>
 @endsection
+
+@push('page_scripts')
+    <script>
+        $(document).ready(function() {
+            $('#disconnect-btn').on('click', function(e) {
+                e.preventDefault()
+                disconnect()
+            })
+
+            $('#reconnect-btn').on('click', function(e) {
+                e.preventDefault()
+                reconnect()
+            })
+        })
+
+        function disconnect() {
+            Swal.fire({
+                title: 'Do you want to disconnect this account?',
+                showDenyButton: true,
+                confirmButtonText: 'Yes',
+                denyButtonText: `No`,
+            }).then((result) => {
+                /* Read more about isConfirmed, isDenied below */
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url : "{{ route('customers.update-status') }}",
+                        type : "GET",
+                        data : {
+                            id : "{{ $customer->id }}",
+                            Status : 'DISCONNECTED'
+                        },
+                        success : function(res) {
+                            Toast.fire({
+                                text : 'Account Disconnected',
+                                icon : 'success'
+                            })
+                            location.reload()
+                        },
+                        error : function(err) {
+                            Toast.fire({
+                                text : 'Error disconnecting account',
+                                icon : 'error'
+                            })
+                        }
+                    })
+                }
+            })
+        }
+
+        function reconnect() {
+            Swal.fire({
+                title: 'Do you want to reconnect this account?',
+                showDenyButton: true,
+                confirmButtonText: 'Yes',
+                denyButtonText: `No`,
+            }).then((result) => {
+                /* Read more about isConfirmed, isDenied below */
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url : "{{ route('customers.update-status') }}",
+                        type : "GET",
+                        data : {
+                            id : "{{ $customer->id }}",
+                            Status : 'ACTIVE'
+                        },
+                        success : function(res) {
+                            Toast.fire({
+                                text : 'Account Reconnected',
+                                icon : 'success'
+                            })
+                            location.reload()
+                        },
+                        error : function(err) {
+                            Toast.fire({
+                                text : 'Error reconnecting account',
+                                icon : 'error'
+                            })
+                        }
+                    })
+                }
+            })
+        }
+    </script>
+@endpush
