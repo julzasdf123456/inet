@@ -51,8 +51,10 @@
                         <td>{{ $item->ContactNumber }}</td>
                         <td>{{ $item->MacAddress }}</td>
                         <td>{{ $item->SpeedSubscribed }} mbps</td>
-                        <td>
-                            <a href="{{ route('customers.show', [$item->id]) }}" class="btn btn-sm text-primary btn-link float-right"><i class="fas fa-eye"></i></a>
+                        <td> 
+                            <a href="{{ route('customerTechnicals.change-modem', [$item->id]) }}" class="btn btn-link btn-sm text-warning float-right" title="Change Modem or Upgrade/Downgrade Subscribed Speed"><i class="fas fa-level-up-alt"></i></a>
+                            <a href="{{ route('customers.edit', [$item->id]) }}" title="Edit customer information" class="btn btn-sm text-primary btn-link float-right"><i class="fas fa-pen"></i></a>
+                            <a href="{{ route('customers.show', [$item->id]) }}" title="View Customer Profile" class="btn btn-sm text-primary btn-link float-right"><i class="fas fa-eye"></i></a>
                         </td>
                     </tr>
                 @endforeach

@@ -50,7 +50,7 @@
                         </tr> 
                         <tr>
                             <td class="text-muted">Monthly Payment</td>
-                            <td class="text-right text-success"><strong>{{ $customerTechnical->MonthlyPayment != null ? 'P ' . number_format($customerTechnical->MonthlyPayment, 2) : '' }}</strong></td>
+                            <td class="text-right text-success"><strong>{{ $customerTechnical != null && $customerTechnical->MonthlyPayment != null ? 'P ' . number_format($customerTechnical->MonthlyPayment, 2) : '' }}</strong></td>
                         </tr>
                         <tr>
                             <td class="text-muted">Speed Subscribed</td>

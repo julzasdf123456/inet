@@ -93,9 +93,11 @@
                            <option value="20" {{ $customerTechnical != null && $customerTechnical->SpeedSubscribed=='20' ? 'selected' : '' }}>20 Mbps</option>
                            <option value="25" {{ $customerTechnical != null && $customerTechnical->SpeedSubscribed=='25' ? 'selected' : '' }}>25 Mbps</option>
                            <option value="30" {{ $customerTechnical != null && $customerTechnical->SpeedSubscribed=='30' ? 'selected' : '' }}>30 Mbps</option>
+                           <option value="35" {{ $customerTechnical != null && $customerTechnical->SpeedSubscribed=='35' ? 'selected' : '' }}>35 Mbps</option>
                            <option value="40" {{ $customerTechnical != null && $customerTechnical->SpeedSubscribed=='40' ? 'selected' : '' }}>40 Mbps</option>
                            <option value="50" {{ $customerTechnical != null && $customerTechnical->SpeedSubscribed=='50' ? 'selected' : '' }}>50 Mbps</option>
                            <option value="100" {{ $customerTechnical != null && $customerTechnical->SpeedSubscribed=='100' ? 'selected' : '' }}>100 Mbps</option>
+                           <option value="200" {{ $customerTechnical != null && $customerTechnical->SpeedSubscribed=='200' ? 'selected' : '' }}>200 Mbps</option>
                      </select>
                   </div>
 
