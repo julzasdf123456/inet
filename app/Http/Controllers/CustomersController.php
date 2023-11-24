@@ -60,7 +60,9 @@ class CustomersController extends AppBaseController
                         'CustomerTechnical.MacAddress',
                         'CustomerTechnical.SpeedSubscribed',
                     )
-                    ->paginate(100);
+                    ->orderBy('Barangays.Barangay')
+                    ->orderBy('FullName')
+                    ->paginate(300);
             } else {
                 $data = DB::table('Customers')
                     ->leftJoin('CustomerTechnical', 'Customers.CustomerTechnicalId', '=', 'CustomerTechnical.id')
@@ -77,7 +79,9 @@ class CustomersController extends AppBaseController
                         'CustomerTechnical.MacAddress',
                         'CustomerTechnical.SpeedSubscribed',
                     )
-                    ->paginate(100);
+                    ->orderBy('Barangays.Barangay')
+                    ->orderBy('FullName')
+                    ->paginate(300);
             }            
         } else {
             if ($town != 'All') {
@@ -97,7 +101,9 @@ class CustomersController extends AppBaseController
                         'CustomerTechnical.MacAddress',
                         'CustomerTechnical.SpeedSubscribed',
                     )
-                    ->paginate(200);
+                    ->orderBy('Barangays.Barangay')
+                    ->orderBy('FullName')
+                    ->paginate(300);
             } else {
                 $data = DB::table('Customers')
                     ->leftJoin('CustomerTechnical', 'Customers.CustomerTechnicalId', '=', 'CustomerTechnical.id')
@@ -114,7 +120,9 @@ class CustomersController extends AppBaseController
                         'CustomerTechnical.MacAddress',
                         'CustomerTechnical.SpeedSubscribed',
                     )
-                    ->paginate(25);
+                    ->orderBy('Barangays.Barangay')
+                    ->orderBy('FullName')
+                    ->paginate(300);
             }           
         }
 
