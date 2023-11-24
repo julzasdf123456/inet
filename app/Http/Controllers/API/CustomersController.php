@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Customers;
 use App\Models\CustomerTechnical;
 use App\Models\Billings;
+use App\Models\Tickets;
+use App\Models\TicketTypes;
+use App\Models\TicketLogs;
+use App\Models\IDGenerator;
 use Validator;
 
 class CustomersController extends Controller {
@@ -226,5 +230,38 @@ class CustomersController extends Controller {
       }
 
       return response()->json($data, 200);
+   }
+   
+   public function getTicketTypesAjax(Request $request) {
+      $ticketTypes = TicketTypes::orderBy('TicketName')->get();
+
+      return response()->json($ticketTypes, 200);
+   }
+
+   public function insertTicket(Request $request) {
+      $input = $request->all();
+      $input['id'] = IDGenerator::generateID();
+
+      // GET CUSTOMER FIRST
+      $customer = Customers::find($input['CustomerId']);
+      if ($customer != null) {
+         $input['CustomerName'] = $customer->FullName;
+         $input['Town'] = $customer->Town;
+         $input['Barangay'] = $customer->Barangay;
+         $input['Latitude'] = $customer->Latitude;
+         $input['Longitude'] = $customer->Longitude;
+      }
+
+      // INSERT TICKET
+      $ticket = Tickets::create($input);
+
+      // INSERT TICKET LOGS
+      $logs = new TicketLogs;
+      $logs->id = IDGenerator::generateIDandRandString();
+      $logs->TicketId = $ticket->id;
+      $logs->LogDetails = 'Ticket filed online by ' . $ticket->CustomerName;
+      $logs->save();
+      
+      return response()->json($ticket);
    }
 }

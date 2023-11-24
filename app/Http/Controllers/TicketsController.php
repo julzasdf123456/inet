@@ -7,6 +7,13 @@ use App\Http\Requests\UpdateTicketsRequest;
 use App\Repositories\TicketsRepository;
 use App\Http\Controllers\AppBaseController;
 use Illuminate\Http\Request;
+use App\Models\Tickets;
+use App\Models\TicketTypes;
+use App\Models\TicketLogs;
+use App\Models\Customers;
+use App\Models\CustomerTechnical;
+use Illuminate\Support\Facades\Auth; 
+use Illuminate\Support\Facades\DB; 
 use Flash;
 use Response;
 
@@ -30,10 +37,37 @@ class TicketsController extends AppBaseController
      */
     public function index(Request $request)
     {
-        $tickets = $this->ticketsRepository->all();
+        $allTickets = DB::table('Tickets')
+            ->leftJoin('TicketTypes', 'Tickets.Ticket', '=', 'TicketTypes.id')
+            ->leftJoin('Towns', 'Tickets.Town', '=', 'Towns.id')
+            ->leftJoin('Barangays', 'Tickets.Barangay', '=', 'Barangays.id')
+            ->select(
+                'Tickets.*',
+                'Towns.Town as TownName',
+                'Barangays.Barangay as BarangayName',
+                'TicketTypes.TicketName',
+            )
+            ->orderByDesc('Tickets.created_at')
+            ->paginate(30);
 
-        return view('tickets.index')
-            ->with('tickets', $tickets);
+        $newTickets = DB::table('Tickets')
+            ->leftJoin('TicketTypes', 'Tickets.Ticket', '=', 'TicketTypes.id')
+            ->leftJoin('Towns', 'Tickets.Town', '=', 'Towns.id')
+            ->leftJoin('Barangays', 'Tickets.Barangay', '=', 'Barangays.id')
+            ->where('Status', 'Pending')
+            ->select(
+                'Tickets.*',
+                'Towns.Town as TownName',
+                'Barangays.Barangay as BarangayName',
+                'TicketTypes.TicketName',
+            )
+            ->orderByDesc('Tickets.created_at')
+            ->get();
+
+        return view('tickets.index', [
+            'allTickets' => $allTickets,
+            'newTickets' => $newTickets,
+        ]);
     }
 
     /**
@@ -73,15 +107,62 @@ class TicketsController extends AppBaseController
      */
     public function show($id)
     {
-        $tickets = $this->ticketsRepository->find($id);
+        $ticket = DB::table('Tickets')
+            ->leftJoin('TicketTypes', 'Tickets.Ticket', '=', 'TicketTypes.id')
+            ->where('Tickets.id', $id)
+            ->select(
+                'Tickets.*',
+                'TicketTypes.TicketName',
+            )
+            ->first();
 
-        if (empty($tickets)) {
+        $ticketLogs = TicketLogs::where('TicketId', $id)->orderByDesc('created_at')->get();
+
+        $customers = DB::table('Customers')
+            ->leftJoin('Towns', 'Customers.Town', '=', 'Towns.id')
+            ->leftJoin('Barangays', 'Customers.Barangay', '=', 'Barangays.id')
+            ->leftJoin('users', 'users.id', '=', 'Customers.UserId')
+            ->select(
+                'FullName',
+                'Customers.id',
+                'Towns.Town',
+                'Barangays.Barangay',
+                'Purok',
+                'Customers.Email',
+                'ContactNumber',
+                'DateConnected',
+                'Status',
+                'CustomerTechnicalId',
+                'users.name',
+                'Latitude',
+                'Longitude',
+                'Customers.created_at',
+            )
+            ->where('Customers.id', $ticket->CustomerId)
+            ->first();
+
+        $customersTechnical = CustomerTechnical::find($customers->CustomerTechnicalId);
+        $modemHistory = DB::table('CustomerTechnical')
+                ->leftJoin('users', 'CustomerTechnical.UserId', '=', 'users.id')
+                ->whereRaw("CustomerId='" . $ticket->CustomerId . "'")
+                ->select('CustomerTechnical.*', 'users.name')
+                ->orderByDesc('CustomerTechnical.created_at')
+                // ->offset(1)
+                ->get();
+
+        if (empty($ticket)) {
             Flash::error('Tickets not found');
 
             return redirect(route('tickets.index'));
         }
 
-        return view('tickets.show')->with('tickets', $tickets);
+        return view('tickets.show', [
+            'ticket' => $ticket,
+            'customer' => $customers,
+            'customerTechnical' => $customersTechnical,
+            'modemHistory' => $modemHistory,
+            'ticketLogs' => $ticketLogs,
+        ]);
     }
 
     /**
@@ -154,4 +235,5 @@ class TicketsController extends AppBaseController
 
         return redirect(route('tickets.index'));
     }
+
 }

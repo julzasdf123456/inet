@@ -92,3 +92,5 @@ Route::post('receive-bills', [OtherData::class, 'receiveBills']);
 Route::get('get-account-by-account-number', [CustomersController::class, 'getAccountByAccountNumber']);
 Route::get('get-latest-bills', [CustomersController::class, 'getLatestBills']);
 Route::get('get-printable-bill', [CustomersController::class, 'getPrintableBill']);
+Route::get('get-ticket-types-ajax', [CustomersController::class, 'getTicketTypesAjax']);
+Route::post('insert-ticket', [CustomersController::class, 'insertTicket']);
