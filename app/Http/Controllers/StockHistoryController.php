@@ -88,7 +88,7 @@ class StockHistoryController extends AppBaseController
 
         Flash::success('Stock History saved successfully.');
 
-        return redirect(route('stockHistories.index'));
+        return redirect(route('stocks.index'));
     }
 
     /**
@@ -180,5 +180,33 @@ class StockHistoryController extends AppBaseController
         Flash::success('Stock History deleted successfully.');
 
         return redirect(route('stockHistories.index'));
+    }
+
+    public function withdrawal(Request $request) {
+        return view('/stock_histories/withdrawal', [
+            'stocks' => Stocks::orderBy('StockName')->get(),
+        ]);
+    }
+
+    public function withdraw(Request $request) {
+        $input = $request->all();
+        $input['id'] = IDGenerator::generateIDandRandString();
+        $input['UserId'] = Auth::id();
+
+        // UPDATE STOCK QUANTITY
+        $stock = Stocks::find($input['StockId']);
+        if ($stock != null) {
+            $qty = $stock->StockQuantity != null ? floatval($stock->StockQuantity) : 0;
+            $qty = $qty - floatval($input['Quantity']);
+            $stock->StockQuantity = round($qty, 2);
+            $stock->save();
+        }
+
+        $input['Quantity'] = '-' . $input['Quantity'];
+        $stockHistory = $this->stockHistoryRepository->create($input);
+
+        Flash::success('Stock History saved successfully.');
+
+        return redirect(route('stocks.index'));
     }
 }

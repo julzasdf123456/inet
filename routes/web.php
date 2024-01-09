@@ -100,6 +100,9 @@ Route::get('/stocks/add-stocks', [App\Http\Controllers\StocksController::class, 
 Route::post('/stocks/store-ajax', [App\Http\Controllers\StocksController::class, 'storeAjax'])->name('stocks.store-ajax');
 Route::resource('stocks', App\Http\Controllers\StocksController::class);
 
+
+Route::get('/stock_histories/withdrawal', [App\Http\Controllers\StockHistoryController::class, 'withdrawal'])->name('stockHistories.withdrawal');
+Route::post('/stock_histories/withdraw', [App\Http\Controllers\StockHistoryController::class, 'withdraw'])->name('stockHistories.withdraw');
 Route::resource('stockHistories', App\Http\Controllers\StockHistoryController::class);
 
 Route::resource('ticketLogs', App\Http\Controllers\TicketLogsController::class);

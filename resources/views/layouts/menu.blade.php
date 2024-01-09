@@ -129,6 +129,13 @@
                 <p>Stock Histories</p>
             </a>
         </li>
+        <li class="nav-item">
+            <a href="{{ route('stockHistories.withdrawal') }}"
+               class="nav-link {{ Request::is('stockHistories.withdrawal') ? 'active' : '' }}">
+                <i class="fas fa-minus-circle nav-icon"></i>
+                <p>Stock Withdrawal</p>
+            </a>
+        </li>
     </ul>
 </li>
 
